@@ -18,6 +18,7 @@ import ItemNote from "../components/ItemNote/ItemNote";
 import FormNote from "../components/FormNote/FormNote";
 import NoteType from "../types/NoteType";
 import { logoff, selectUsers } from "../store/modules/UserSlice";
+import { logOff } from "../store/modules/LoginSlice";
 
 const Home: React.FC = () => {
   const [openEdit, setOpenEdit] = useState<boolean>(false);
@@ -28,14 +29,13 @@ const Home: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const usersRedux = useAppSelector(selectUsers);
-  const userLogged = usersRedux.find((user: { logged: any }) => user.logged);
+  const usersRedux = useAppSelector((state) => state.login);
 
   useEffect(() => {
-    if (!userLogged) {
+    if (!usersRedux.username) {
       navigate("/login");
     }
-  }, [userLogged, navigate]);
+  }, [usersRedux, navigate]);
 
   const handleAddDescription = useCallback(
     (note: NoteType) => {
@@ -58,6 +58,11 @@ const Home: React.FC = () => {
 
   const handleEditNote = useCallback(
     (note: NoteType) => {
+      if (desc.length < 4) {
+        alert("Insira ao menos 4 caracteres na Descrição");
+        return;
+      }
+
       dispatch(
         updateNote({
           id: note.id,
@@ -69,21 +74,17 @@ const Home: React.FC = () => {
       );
       setOpenEdit(false);
     },
-    [dispatch]
+    [desc.length, dispatch]
   );
 
   const handleClose = () => {
     setOpenEdit(false);
   };
 
-  console.log(userLogged?.username);
-
-  // const getSessionStorage = sessionStorage.getItem("current") || "";
-
-  const logOff = () => {
+  const handleOff = () => {
     dispatch(
-      logoff({
-        username: userLogged?.username,
+      logOff({
+        username: usersRedux.username,
       })
     );
   };
@@ -151,7 +152,7 @@ const Home: React.FC = () => {
           </Button>
         </DialogActions>
       </Dialog>
-      <Button sx={{ marginTop: "10px" }} variant="outlined" onClick={logOff}>
+      <Button sx={{ marginTop: "10px" }} variant="outlined" onClick={() => handleOff()}>
         {" "}
         Sair
       </Button>

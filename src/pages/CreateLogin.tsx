@@ -2,18 +2,16 @@ import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { CreateForm } from "../components/CreateLogin/CreateForm";
 import { useAppSelector } from "../store/hooks";
-import { selectUsers } from "../store/modules/UserSlice";
 
 const CreateLogin: React.FC = () => {
-  const usersRedux = useAppSelector(selectUsers);
-  const userLogged = usersRedux.find((user) => user.logged);
+  const usersRedux = useAppSelector((state) => state.login);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (userLogged) {
+    if (usersRedux.logged) {
       navigate("/");
     }
-  }, [navigate, userLogged, usersRedux]);
+  }, [navigate, usersRedux]);
 
   return (
     <div>

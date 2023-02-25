@@ -7,6 +7,7 @@ import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { addUser, selectUsersById, User } from "../../store/modules/UserSlice";
 import { setMessage } from "../../store/modules/MessageSlice";
 import Message from "../Message";
+import { createUser } from "../../store/modules/LoginSlice";
 
 const CreateForm: React.FC = () => {
   const [username, setUsername] = useState<string>("");
@@ -14,7 +15,7 @@ const CreateForm: React.FC = () => {
   const [password2, setPassword2] = useState("");
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const userExist = useAppSelector((state: any) => selectUsersById(state, username));
+  const usersRedux = useAppSelector((state) => state.login);
 
   const handleClear = () => {
     setUsername("");
@@ -22,7 +23,7 @@ const CreateForm: React.FC = () => {
     setPassword2("");
   };
 
-  const handleRegister = () => {
+  const handleRegister = async () => {
     if (!username || !password || !password2) {
       dispatch(
         setMessage({
@@ -59,7 +60,7 @@ const CreateForm: React.FC = () => {
       );
       return;
     }
-    if (userExist) {
+    if (usersRedux.username) {
       dispatch(
         setMessage({
           msg: "Username já existe",
@@ -73,15 +74,18 @@ const CreateForm: React.FC = () => {
       password,
       logged: false,
     };
-    dispatch(addUser(newUser));
-    handleClear();
-    dispatch(
-      setMessage({
-        msg: "Usuário criado com Sucesso",
-        type: "success",
-      })
-    );
-    navigate("/");
+    const result = await dispatch(createUser(newUser)).unwrap();
+    if (result.ok) {
+      handleClear();
+      dispatch(
+        setMessage({
+          msg: "Usuário criado com Sucesso",
+          type: "success",
+        })
+      );
+      navigate("/login");
+    }
+    // dispatch(addUser(newUser));
   };
 
   const handleBack = () => {
@@ -107,9 +111,7 @@ const CreateForm: React.FC = () => {
           <Grid item xs={12}>
             <TextField
               id="outlined-basic"
-              onChange={(ev: { target: { value: React.SetStateAction<string> } }) =>
-                setUsername(ev.target.value)
-              }
+              onChange={(ev) => setUsername(ev.target.value)}
               label="Username"
               value={username || ""}
               variant="outlined"
@@ -119,9 +121,7 @@ const CreateForm: React.FC = () => {
           <Grid item xs={12}>
             <TextField
               id="outlined-basic"
-              onChange={(ev: { target: { value: React.SetStateAction<string> } }) =>
-                setPassword(ev.target.value)
-              }
+              onChange={(ev) => setPassword(ev.target.value)}
               label="Senha"
               value={password || ""}
               variant="outlined"
@@ -131,9 +131,7 @@ const CreateForm: React.FC = () => {
           <Grid item xs={12}>
             <TextField
               id="outlined-basic"
-              onChange={(ev: { target: { value: React.SetStateAction<string> } }) =>
-                setPassword2(ev.target.value)
-              }
+              onChange={(ev) => setPassword2(ev.target.value)}
               label="Repita a Senha"
               value={password2 || ""}
               variant="outlined"

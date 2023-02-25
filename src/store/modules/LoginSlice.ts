@@ -1,18 +1,5 @@
-import { createEntityAdapter, createSlice } from "@reduxjs/toolkit";
-
-// interface LoginType {
-//   username: string;
-//   password: string;
-//   logged: boolean;
-//   notes?: string[];
-// }
-
-// const initialState: LoginType = {
-//   username: "",
-//   password: "",
-//   logged: false,
-//   notes: [],
-// };
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { apiCreate } from "../../api";
 
 export interface UserLogin {
   username: string;
@@ -20,19 +7,44 @@ export interface UserLogin {
   logged: boolean;
 }
 
-const userAdapter = createEntityAdapter<UserLogin>({
-  selectId: (item) => item.username,
+export const createUser = createAsyncThunk("createUser", async (newUser: UserLogin) => {
+  try {
+    const { data } = await apiCreate("/user/createLogin", newUser);
+    return data;
+  } catch (data: any) {
+    return data;
+  }
+});
+
+export const loginUser = createAsyncThunk("loginUser", async (newUser: UserLogin) => {
+  try {
+    const { data } = await apiCreate("/user/login", newUser);
+    if (data.ok === true) {
+      return data.data;
+    }
+  } catch (data: any) {
+    return data.message;
+  }
 });
 
 const loginSlice = createSlice({
   name: "login",
-  initialState: userAdapter.getInitialState({}),
+  initialState: {
+    id: undefined,
+    username: undefined,
+    logged: false,
+  },
   reducers: {
-    addUser: userAdapter.addOne,
-    updateUser: userAdapter.updateOne,
-    removeUser: userAdapter.removeOne,
+    logOff(state, action: PayloadAction<{ username: any }>) {
+      return { id: undefined, username: undefined, logged: false };
+    },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(loginUser.fulfilled, (state, action) => {
+      return action.payload;
+    });
   },
 });
 
-export const { addUser, updateUser, removeUser } = loginSlice.actions;
 export default loginSlice.reducer;
+export const { logOff } = loginSlice.actions;

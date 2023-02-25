@@ -7,7 +7,7 @@ import storage from "redux-persist/lib/storage"; // defaults to localStorage for
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["users", "notes"],
+  whitelist: ["users", "notes", "login"],
 };
 
 const persistedReducers = persistReducer(persistConfig, rootReducer);
@@ -15,7 +15,6 @@ const persistedReducers = persistReducer(persistConfig, rootReducer);
 const store = configureStore({
   reducer: persistedReducers,
   devTools: true,
-  // middleware: [thunk],
 });
 
 const persistor = persistStore(store);
@@ -26,23 +25,3 @@ export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 
 export { store, persistor };
-
-// const persistConfig = {
-//   key: "root",
-//   storage,
-// };
-
-// const persistedReducer = persistReducer(persistConfig, rootReducer);
-
-// //
-// export const store = configureStore({
-//   reducer: persistedReducer,
-//   devTools: true,
-// });
-
-// // Infer the `RootState` and `AppDispatch` types from the store itself
-// export type RootState = ReturnType<typeof store.getState>;
-// // Inferred type: {posts: PostsState, comments: CommentsState, users: UsersState}
-// export type AppDispatch = typeof store.dispatch;
-
-// export const persistor = store;

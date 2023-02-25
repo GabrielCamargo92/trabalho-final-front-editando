@@ -7,12 +7,17 @@ const apiGet = async (url: string) => {
   return response;
 };
 
+const apiLogin = async (url: string, data: any) => {
+  const response: AxiosResponse = await axios.post(url, data);
+  return response;
+};
+
 const apiPut = async (url: string, data: any) => {
   const response: AxiosResponse = await axios.put(url, data);
   return response;
 };
 
-const apiPost = async (url: string, data: any) => {
+const apiCreate = async (url: string, data: any) => {
   const response: AxiosResponse = await axios.post(url, data);
   return response;
 };
@@ -22,4 +27,4 @@ const apiDelete = async (url: string) => {
   return response;
 };
 
-export { apiGet, apiPut, apiPost, apiDelete };
+export { apiGet, apiPut, apiCreate, apiDelete, apiLogin };
