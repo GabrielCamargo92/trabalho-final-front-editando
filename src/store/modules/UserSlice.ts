@@ -5,6 +5,7 @@ export interface User {
   username: string;
   password: string;
   logged: boolean;
+  // notes: [];
 }
 
 const UserAdapter = createEntityAdapter<User>({

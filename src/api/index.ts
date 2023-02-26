@@ -28,3 +28,10 @@ const apiDelete = async (url: string) => {
 };
 
 export { apiGet, apiPut, apiCreate, apiDelete, apiLogin };
+
+const apiGetNotes = async (url: string, data: any) => {
+  const response: AxiosResponse = await axios.get(url);
+  return response;
+};
+
+export { apiGetNotes };

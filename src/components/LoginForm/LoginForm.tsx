@@ -3,8 +3,7 @@ import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
 
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import { login } from "../../store/modules/UserSlice";
+import { useAppDispatch } from "../../store/hooks";
 import Message from "../Message";
 import { setMessage } from "../../store/modules/MessageSlice";
 import { loginUser } from "../../store/modules/LoginSlice";
@@ -14,9 +13,8 @@ const LoginForm: React.FC = () => {
   const [password, setPassword] = useState<string>("");
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const usersRedux = useAppSelector((state) => state.login);
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (!username) {
       dispatch(
         setMessage({
@@ -34,26 +32,71 @@ const LoginForm: React.FC = () => {
       }
       return;
     }
-    // dispatch(login({ username }));
-    dispatch(
-      loginUser({
-        username,
-        password,
-        logged: true,
-      })
-    );
-    dispatch(
-      setMessage({
-        msg: "Login Realizado com Sucesso",
-        type: "success",
-      })
-    );
-    navigate("/");
+    const userLogin = {
+      username,
+      password,
+      logged: false,
+    };
+    const result = await dispatch(loginUser(userLogin)).unwrap();
+    if (result.ok) {
+      dispatch(
+        loginUser({
+          username,
+          password,
+          logged: true,
+        })
+      );
+      dispatch(
+        setMessage({
+          msg: "Login Realizado com Sucesso",
+          type: "success",
+        })
+      );
+      navigate("/");
+    }
   };
 
   const handleCreateLogin = () => {
     navigate("/createLogin");
   };
+
+  // const handleLogin = () => {
+  //   if (!username) {
+  //     dispatch(
+  //       setMessage({
+  //         msg: "Usuário não cadastrado ou Senha incorreta",
+  //         type: "error",
+  //       })
+  //     );
+  //     if (!password) {
+  //       dispatch(
+  //         setMessage({
+  //           msg: "Preencha o campo para password",
+  //           type: "error",
+  //         })
+  //       );
+  //     }
+  //     return;
+  //   }
+  //   dispatch(
+  //     loginUser({
+  //       username,
+  //       password,
+  //       logged: true,
+  //     })
+  //   );
+  //   dispatch(
+  //     setMessage({
+  //       msg: "Login Realizado com Sucesso",
+  //       type: "success",
+  //     })
+  //   );
+  //   navigate("/");
+  // };
+
+  // const handleCreateLogin = () => {
+  //   navigate("/createLogin");
+  // };
 
   return (
     <Grid

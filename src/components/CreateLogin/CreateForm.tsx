@@ -85,7 +85,6 @@ const CreateForm: React.FC = () => {
       );
       navigate("/login");
     }
-    // dispatch(addUser(newUser));
   };
 
   const handleBack = () => {

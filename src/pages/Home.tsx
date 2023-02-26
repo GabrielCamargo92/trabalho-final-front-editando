@@ -17,8 +17,8 @@ import Message from "../components/Message";
 import ItemNote from "../components/ItemNote/ItemNote";
 import FormNote from "../components/FormNote/FormNote";
 import NoteType from "../types/NoteType";
-import { logoff, selectUsers } from "../store/modules/UserSlice";
 import { logOff } from "../store/modules/LoginSlice";
+import { setMessage } from "../store/modules/MessageSlice";
 
 const Home: React.FC = () => {
   const [openEdit, setOpenEdit] = useState<boolean>(false);
@@ -58,11 +58,25 @@ const Home: React.FC = () => {
 
   const handleEditNote = useCallback(
     (note: NoteType) => {
-      if (desc.length < 4) {
-        alert("Insira ao menos 4 caracteres na Descrição");
+      if (desc.length < 3) {
+        dispatch(
+          setMessage({
+            msg: "Preencha o campo 'descrição' com ao menos 3 caracteres",
+            type: "error",
+          })
+        );
         return;
       }
 
+      if (det.length < 3) {
+        dispatch(
+          setMessage({
+            msg: "Preencha o campo 'detalhamento' com ao menos 3 caracteres",
+            type: "error",
+          })
+        );
+        return;
+      }
       dispatch(
         updateNote({
           id: note.id,
@@ -74,7 +88,7 @@ const Home: React.FC = () => {
       );
       setOpenEdit(false);
     },
-    [desc.length, dispatch]
+    [desc.length, det.length, dispatch]
   );
 
   const handleClose = () => {
@@ -96,7 +110,7 @@ const Home: React.FC = () => {
         <Message />
       </Grid>
       <Grid item xs={12}>
-        <Paper elevation={2} sx={{ padding: "5px" }}>
+        {/* <Paper elevation={2} sx={{ padding: "5px" }}>
           {notesRedux.map((item: NoteType) => {
             return (
               <ItemNote
@@ -107,7 +121,7 @@ const Home: React.FC = () => {
               />
             );
           })}
-        </Paper>
+        </Paper> */}
       </Grid>
       <Dialog open={openEdit} onClose={handleClose}>
         <DialogTitle>Edite seu recado</DialogTitle>
